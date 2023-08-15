@@ -11,18 +11,35 @@ enum Names
     IF,//2
     ELSE,//3
     THEN,//4
-    RELOP,//5
+    OP,//5
     EQ,//6
     NE,//7
     GT,//8
     GE,//9
     LT,//10
     LE,//11
-    NUMBER,//12
-    DOUBLE_LITERAL,//13
-    FLOAT_LITERAL,//14
-    INTEGER_LITERAL,//15
-    END_OF_FILE//16
+    ASSIGN,//12
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    MODULE,
+    INTEGER,
+    SEP,
+    LPARENTESES,
+    RPARENTESES,
+    LSQUARE,
+    RSQUARE,
+    LBRACE,
+    RBRACE,
+    COMMA,
+    DOT,
+    SEMICOLON,
+    LQUOTE,
+    RQUOTE,
+    LINECOMMENT,
+    BLOCKCOMMENT,
+    END_OF_FILE
 };
 
 class Token 
