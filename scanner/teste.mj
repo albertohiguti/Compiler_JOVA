@@ -1,0 +1,10 @@
+int a = 5;
+// comentario de teste
+int b = 7;
+
+/*outro 
+comentario de teste*/
+int resultado = a + b;
+print("A soma de é igual a ");
+
+
