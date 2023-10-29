@@ -5,6 +5,23 @@ int b = 7;
 /*outro 
 comentario de teste*/
 int resultado = a + b;
-print("A soma de é igual a ");
+print("A soma de e igual a ");
 
+float expressao_numerica;
+expressao_numerica = {a / [b + 2] - 3} * (a + b);
 
+if (a > b) {
+    print("A e maior que B");
+} else if (a < b) {
+    print("A e menor que B");
+} else if (a == b) {
+    print("A e igual a B");
+} else if (a != b) {
+    print("A e diferente de B");
+} else if (a >= b) {
+    print("A e maior ou igual a B");
+} else if (a <= b) {
+    print("A e menor ou igual a B");
+} else {
+    print("A e B nao sao comparaveis");
+}

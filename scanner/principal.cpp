@@ -1,9 +1,9 @@
 #include "scanner.h"
 
-string *vet;
+string *attributes_translator, *name_translator;
 
 void print(Token *);
-void allocVetor();
+void createEnumTranslator();
 void freeVetor();
 
 int main(int argc, char *argv[])
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     Scanner *scanner = new Scanner(argv[1]);
 
-    allocVetor();
+    createEnumTranslator();
 
     Token *token;
 
@@ -25,50 +25,63 @@ int main(int argc, char *argv[])
     {
         token = scanner->nextToken();
         // cout << t->name << " ";
-        print(token);
+        std::cout << "Name " << name_translator[token->name] << " Attribute " << attributes_translator[token->attribute] << " Lexeme " << token->lexeme << "\n";
+
     } while (token->name != END_OF_FILE);
 
     delete scanner;
 
-    freeVetor();
-
     return 0;
 }
 
-void allocVetor()
+void createEnumTranslator()
 {
-    vet = new string[17];
+    attributes_translator = new string[27]{
+        "UNDEF",         // 0
+        "EQ",            // 1
+        "NE",            // 2
+        "GT",            // 3
+        "GE",            // 4
+        "LT",            // 5
+        "LE",            // 6
+        "ASSIGN",        // 7
+        "ADD",           // 8
+        "SUB",           // 9
+        "MUL",           // 10
+        "DIV",           // 11
+        "MODULE",        // 12
+        "LPARENTESES",   // 13
+        "RPARENTESES",   // 14
+        "LSQUARE",       // 15
+        "RSQUARE",       // 16
+        "LBRACE",        // 17
+        "RBRACE",        // 18
+        "DOT",           // 19
+        "SEMICOLON",     // 20
+        "QUOTE",         // 21
+        "LQUOTE",        // 22
+        "RQUOTE",        // 23
+        "LINECOMMENT",   // 24
+        "LBLOCKCOMMENT", // 25
+        "RBLOCKCOMMENT"  // 26
+    };
 
-    vet[0] = "UNDEF";            // 0
-    vet[1] = "ID";               // 1
-    vet[2] = "IF";               // 2
-    vet[3] = "ELSE";             // 3
-    vet[4] = "THEN";             // 4
-    vet[5] = "RELOP";            // 5
-    vet[6] = "EQ";               // 6
-    vet[7] = "NE";               // 7
-    vet[8] = "GT";               // 8
-    vet[9] = "GE";               // 9
-    vet[10] = "LT";              // 10
-    vet[11] = "LE";              // 11
-    vet[12] = "NUMBER";          // 12
-    vet[13] = "DOUBLE_LITERAL";  // 13
-    vet[14] = "FLOAT_LITERAL";   // 14
-    vet[15] = "INTEGER_LITERAL"; // 15
-    vet[16] = "END_OF_FILE";     // 16
-}
-
-void freeVetor()
-{
-    delete[] vet;
+    name_translator = new string[7]{
+        "ID",
+        "INTEGER_LITERAL",
+        "OP",
+        "SEP",
+        "STRING",
+        "COMMENT",
+        "END_OF_FILE"};
 }
 
 void print(Token *token)
 {
-    cout << vet[token->name];
+    cout << attributes_translator[token->name];
 
     if (token->attribute != UNDEF)
-        cout << "(" << vet[token->attribute] << ")";
+        cout << "(" << attributes_translator[token->attribute] << ")";
 
     cout << " ";
 }

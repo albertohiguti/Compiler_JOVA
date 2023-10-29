@@ -3,8 +3,6 @@
 // Construtor
 Scanner::Scanner(string Input)
 {
-    this->input = Input;
-
     pos = 0;
     lineID = 1;
 
@@ -16,8 +14,9 @@ Scanner::Scanner(string Input)
     {
         while (getline(inputFile, line))
         {
-            this->input += line + '\n';
+            this->input += line + "\n";
         }
+
         inputFile.close();
     }
     else
@@ -29,9 +28,12 @@ Token *Scanner::nextToken()
 {
     Token *tok;
     int state = 0;
+    string lexeme = "";
 
     while (true)
     {
+        // std::cout << "Analyzing: " << input[pos] << " in position " << pos << " and in State " << state << "\n";
+
         switch (state)
         {
         case 0: // case 9: case12: case22:
@@ -73,16 +75,24 @@ Token *Scanner::nextToken()
             else if (input[pos] == ';')
                 state = 28;
             else if (input[pos] == '"')
-                state = ;
-            else if (input[pos] == '/')
-                state = ;
+                state = 29;
             else if (isalpha(input[pos]))
-                state = ;
+                state = 30;
+            else if (input[pos] == '_')
+                state = 30;
             else if (isdigit(input[pos]))
-                state = ;
+                state = 32;
             else if (isspace(input[pos]))
-                state = ;
+                state = 34;
+            else if (input[pos] == '\n')
+            {
+                lineID++;
+                state = 34;
+            }
+            else
+                lexicalError();
             // cout << state << " ";
+            lexeme += input[pos];
             pos++;
 
             break;
@@ -95,11 +105,11 @@ Token *Scanner::nextToken()
             break;
 
         case 2:
-            tok = new Token(RELOP, LE);
+            tok = new Token(OP, LE);
             return tok;
 
         case 3:
-            tok = new Token(RELOP, LT);
+            tok = new Token(OP, LT);
             return tok;
 
         case 4:
@@ -111,11 +121,11 @@ Token *Scanner::nextToken()
             break;
 
         case 5:
-            tok = new Token(RELOP, GE);
+            tok = new Token(OP, GE);
             return tok;
 
         case 6:
-            tok = new Token(RELOP, GT);
+            tok = new Token(OP, GT);
             return tok;
 
         case 7:
@@ -127,19 +137,19 @@ Token *Scanner::nextToken()
             break;
 
         case 8:
-            tok = new Token(RELOP, EQ);
+            tok = new Token(OP, EQ);
             return tok;
 
         case 9:
-            tok = new Token(RELOP, ASSIGN);
+            tok = new Token(OP, ASSIGN);
             return tok;
 
         case 10:
-            tok = new Token(RELOP, ADD);
+            tok = new Token(OP, ADD);
             return tok;
 
         case 11:
-            tok = new Token(RELOP, SUB);
+            tok = new Token(OP, SUB);
             return tok;
 
         case 12:
@@ -155,7 +165,7 @@ Token *Scanner::nextToken()
             return tok;
 
         case 14:
-            tok = new Token(RELOP, MUL);
+            tok = new Token(OP, MUL);
             return tok;
 
         case 15:
@@ -169,19 +179,30 @@ Token *Scanner::nextToken()
             break;
 
         case 16:
-            tok = new Token(COMMENT, LINECOMMENT);
-            return tok;
+            if (input[pos] == '\n')
+            {
+                lineID++;
+                state = 34;
+            }
+            else
+                state = 16;
+            pos++;
+            break;
 
         case 17:
-            tok = new Token(COMMENT, LBLOCKCOMMENT);
-            return tok;
+            if (input[pos] == '*')
+                state = 36;
+            else
+                state = 17;
+            pos++;
+            break;
 
         case 18:
-            tok = new Token(COMMENT, DIV);
+            tok = new Token(OP, DIV);
             return tok;
 
         case 19:
-            tok = new Token(RELOP, MODULE);
+            tok = new Token(OP, MODULE);
             return tok;
 
         case 20:
@@ -193,7 +214,7 @@ Token *Scanner::nextToken()
             break;
 
         case 21:
-            tok = new Token(RELOP, NE);
+            tok = new Token(OP, NE);
             return tok;
 
         case 22:
@@ -224,212 +245,72 @@ Token *Scanner::nextToken()
             tok = new Token(SEP, SEMICOLON);
             return tok;
 
+        case 29:
+            if (input[pos] == '"')
+                state = 35;
+            else
+                state = 29;
+
+            lexeme += input[pos];
+            pos++;
+            break;
+
+        case 30:
+            if (isalnum(input[pos]))
+                state = 30;
+            else if (input[pos] == '_')
+                state = 30;
+            else
+            {
+                state = 31;
+                pos++;
+                break;
+            }
+            lexeme += input[pos];
+            pos++;
+            break;
+
+        case 31:
+            tok = new Token(ID, lexeme);
+            pos--;
+            return tok;
+
+        case 32:
+            if (isdigit(input[pos]))
+                state = 32;
+            else
+                state = 33;
+
+            pos++;
+            break;
+
+        case 33:
+            tok = new Token(INTEGER_LITERAL, lexeme);
+            pos--;
+            return tok;
+
+        case 34:
+            state = 0;
+            lexeme = "";
+            break;
+
+        case 35:
+            tok = new Token(STRING, lexeme);
+            return tok;
+
+        case 36:
+            if (input[pos] == '/')
+                state = 34;
+            else
+                state = 17;
+            pos++;
+            break;
+
         default:
             lexicalError();
         }
     }
 
-    /*
-        Token* tok;
-        int state;
-
-        state = 0;
-
-        while (true)
-        {
-            switch (state)
-            {
-                case 0://Junção dos estados 0, 9, 12 e 22 dos diagramas
-                    if (input[pos] == '\0')
-                    {
-                        tok = new Token(END_OF_FILE);
-
-                        return tok;
-                    }
-                    if (input[pos] == '<')
-                        state = 1;
-                    else if (input[pos] == '=')
-                        state = 5;
-                    else if (input[pos] == '>')
-                        state = 6;
-                    else if (isalpha(input[pos]))
-                        state = 10;
-                    else if (isdigit(input[pos]))
-                        state = 13;
-                    else if (isspace(input[pos]))
-                        state = 23;
-                    else
-                        lexicalError();
-
-                    pos++;
-
-                    break;
-
-                case 1:
-                    if (input[pos] == '=')
-                        state = 2;
-                    else if (input[pos] == '>')
-                        state = 3;
-                    else
-                        state = 4;
-
-                    pos++;
-
-                    break;
-                case 2:
-                    tok = new Token(RELOP, LE);
-
-                    return tok;
-
-                case 3:
-                    tok = new Token(RELOP, NE);
-
-                    return tok;
-
-                case 4:
-                    tok = new Token(RELOP, LT);
-                    pos--;
-                    return tok;
-
-                case 5:
-                    tok = new Token(RELOP, EQ);
-
-                    return tok;
-                case 6:
-                    if (input[pos] == '=')
-                        state = 7;
-                    else
-                        state = 8;
-
-                    pos++;
-
-                    break;
-
-                case 7:
-                    tok = new Token(RELOP, GE);
-
-                    return tok;
-                case 8:
-                    tok = new Token(RELOP, GT);
-                    pos--;
-
-                    return tok;
-                //case 9:Juntou com o 0
-                case 10:
-                    if (!isalnum(input[pos]))
-                        state = 11;
-                    pos++;
-
-                    break;
-                case 11:
-                    tok = new Token(ID);
-                    pos--;
-
-                    return tok;
-                //case 12:Juntou com o 0 e com o 9
-                case 13:
-                    if (isdigit(input[pos]))
-                        ;
-                    else if (input[pos] == '.')
-                        state = 14;
-                    else if (input[pos] == 'E')
-                        state = 16;
-                    else
-                        state = 20;
-
-                    pos++;
-
-                    break;
-
-                case 14:
-                    if (isdigit(input[pos]))
-                    {
-                        state = 15;
-                        pos++;
-                    }
-                    else
-                        lexicalError();
-
-                    break;
-
-                case 15:
-                    if (isdigit(input[pos]))
-                        ;
-                    else if (input[pos] == 'E')
-                        state = 16;
-                    else
-                        state = 21;
-
-                    pos++;
-
-                    break;
-
-                case 16:
-                    if (input[pos] == '+' || input[pos] == '-')
-                        state = 17;
-                    else if (isdigit(input[pos]))
-                        state = 18;
-                    else
-                        lexicalError();
-
-                    pos++;
-
-                    break;
-
-                case 17:
-                    if (isdigit(input[pos]))
-                    {
-                        state = 18;
-                        pos++;
-                    }
-                    else
-                        lexicalError();
-
-                    break;
-
-                case 18:
-                    if (!isdigit(input[pos]))
-                        state = 19;
-
-                    pos++;
-
-                    break;
-
-                case 19:
-                    tok = new Token(NUMBER, DOUBLE_LITERAL);
-                    pos--;
-                    return tok;
-
-                case 20:
-                    tok = new Token(NUMBER, INTEGER_LITERAL);
-                    pos--;
-                    return tok;
-
-                case 21:
-                    tok = new Token(NUMBER, FLOAT_LITERAL);
-                    pos--;
-                    return tok;
-
-                //case 22: Juntou com o 0, com o 9 e com o 12
-                case 23:
-                    if (!isspace(input[pos]))
-                        state = 24;
-
-                    pos++;
-
-                    break;
-
-                case 24:
-                    pos--;
-                    state = 0;
-
-                    break;
-
-                default:
-                    lexicalError();
-            }
-        }
-    */
 } // Fim nextToken
 
 void Scanner::lexicalError()
