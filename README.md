@@ -27,7 +27,7 @@ g++ principal.cpp scanner.cpp -o compiler
            ClassBody -> { VarDeclListOpt ConstructDeclListOpt MethodDeclListOpt }
       VarDeclListOpt -> VarDeclList
                       | ϵ
-         VarDeclList -> VarDecl VarDeclList'
+         VarDeclList -> VarDecl VarDeclListLine
              VarDecl -> Type ID VarDeclOpt ;
                       | Type [] ID VarDeclOpt ;
           VarDeclOpt -> , ID VarDeclOpt
@@ -37,36 +37,21 @@ g++ principal.cpp scanner.cpp -o compiler
                       | ID
     ConstructDeclListOpt -> ConstructDeclList
                       | ϵ
-    ConstructDeclList -> ConstructDecl ConstructDeclList'
+    ConstructDeclList -> ConstructDecl ConstructDeclListLine
        ConstructDecl -> constructor MethodBody
     MethodDeclListOpt -> MethodDeclList
                       | ϵ
-      MethodDeclList -> MethodDecl MethodDeclList'
-          MethodDecl -> int ID MethodBody
-                      | string ID MethodBody
-                      | ID ID MethodBody
-                      | int [] id MethodBody
-                      | string [] id MethodBody
-                      | ID [] id MethodBody
+      MethodDeclList -> MethodDecl MethodDeclListLine
+          MethodDecl -> Type ID MethodBody | Type [] ID MethodBody
           MethodBody -> ( ParamListOpt ) { StatementsOpt }
         ParamListOpt -> ParamList
                       | ϵ
-           ParamList -> Param ParamList'
-               Param -> int ID
-                      | string ID
-                      | ID ID
-                      | int [] ID
-                      | string [] ID
-                      | ID [] ID
+           ParamList -> Param ParamListLine
+               Param -> Type ID | Type [] ID
        StatementsOpt -> Statements
                       | ϵ
-          Statements -> Statement Statements'
-           Statement -> int ID VarDeclOpt ; VarDeclList'
-                      | string ID VarDeclOpt ; VarDeclList'
-                      | ID ID VarDeclOpt ; VarDeclList'
-                      | int [] ID VarDeclOpt ; VarDeclList'
-                      | string [] ID VarDeclOpt ; VarDeclList'
-                      | ID [] ID VarDeclOpt ; VarDeclList'
+          Statements -> Statement StatementsLine
+           Statement -> VarDeclList
                       | AtribStat ;
                       | PrintStat ;
                       | ReadStat ;
@@ -99,9 +84,7 @@ g++ principal.cpp scanner.cpp -o compiler
           Expression -> NumExpression
                       | NumExpression RelOp NumExpression
      AllocExpression -> new ID ( ArgListOpt )
-                      | int [ Expression ]
-                      | string [ Expression ]
-                      | ID [ Expression ]
+                      | Type [ Expression ]
        NumExpression -> Term + Term
                       | Term - Term
                       | Term
@@ -115,67 +98,20 @@ g++ principal.cpp scanner.cpp -o compiler
                       | STRING_LITERAL
                       | ID LValueComp
                       | ( Expression )
-          ArgListOpt -> ArgList
+        ArgListOpt -> ArgList
                       | ϵ
-             ArgList -> + Factor * UnaryExpression + Term ArgList'
-                      | - Factor * UnaryExpression + Term ArgList'
-                      | + Factor / UnaryExpression + Term ArgList'
-                      | - Factor / UnaryExpression + Term ArgList'
-                      | + Factor % UnaryExpression + Term ArgList'
-                      | - Factor % UnaryExpression + Term ArgList'
-                      | + Factor + Term ArgList'
-                      | - Factor + Term ArgList'
-                      | + Factor * UnaryExpression - Term ArgList'
-                      | - Factor * UnaryExpression - Term ArgList'
-                      | + Factor / UnaryExpression - Term ArgList'
-                      | - Factor / UnaryExpression - Term ArgList'
-                      | + Factor % UnaryExpression - Term ArgList'
-                      | - Factor % UnaryExpression - Term ArgList'
-                      | + Factor - Term ArgList'
-                      | - Factor - Term ArgList'
-                      | + Factor * UnaryExpression ArgList'
-                      | - Factor * UnaryExpression ArgList'
-                      | + Factor / UnaryExpression ArgList'
-                      | - Factor / UnaryExpression ArgList'
-                      | + Factor % UnaryExpression ArgList'
-                      | - Factor % UnaryExpression ArgList'
-                      | + Factor ArgList'
-                      | - Factor ArgList'
-                      | + Factor * UnaryExpression + Term RelOp NumExpression ArgList'
-                      | - Factor * UnaryExpression + Term RelOp NumExpression ArgList'
-                      | + Factor / UnaryExpression + Term RelOp NumExpression ArgList'
-                      | - Factor / UnaryExpression + Term RelOp NumExpression ArgList'
-                      | + Factor % UnaryExpression + Term RelOp NumExpression ArgList'
-                      | - Factor % UnaryExpression + Term RelOp NumExpression ArgList'
-                      | + Factor + Term RelOp NumExpression ArgList'
-                      | - Factor + Term RelOp NumExpression ArgList'
-                      | + Factor * UnaryExpression - Term RelOp NumExpression ArgList'
-                      | - Factor * UnaryExpression - Term RelOp NumExpression ArgList'
-                      | + Factor / UnaryExpression - Term RelOp NumExpression ArgList'
-                      | - Factor / UnaryExpression - Term RelOp NumExpression ArgList'
-                      | + Factor % UnaryExpression - Term RelOp NumExpression ArgList'
-                      | - Factor % UnaryExpression - Term RelOp NumExpression ArgList'
-                      | + Factor - Term RelOp NumExpression ArgList'
-                      | - Factor - Term RelOp NumExpression ArgList'
-                      | + Factor * UnaryExpression RelOp NumExpression ArgList'
-                      | - Factor * UnaryExpression RelOp NumExpression ArgList'
-                      | + Factor / UnaryExpression RelOp NumExpression ArgList'
-                      | - Factor / UnaryExpression RelOp NumExpression ArgList'
-                      | + Factor % UnaryExpression RelOp NumExpression ArgList'
-                      | - Factor % UnaryExpression RelOp NumExpression ArgList'
-                      | + Factor RelOp NumExpression ArgList'
-                      | - Factor RelOp NumExpression ArgList'
-        VarDeclList' -> VarDecl VarDeclList'
+        ArgList -> Expression ArgListLine
+    VarDeclListLine -> VarDecl VarDeclListLine
                       | ϵ
-    ConstructDeclList' -> ConstructDecl ConstructDeclList'
+    ConstructDeclListLine -> ConstructDecl ConstructDeclListLine
                       | ϵ
-     MethodDeclList' -> MethodDecl MethodDeclList'
+     MethodDeclListLine -> MethodDecl MethodDeclListLine
                       | ϵ
-          ParamList' -> , Param ParamList'
+          ParamListLine -> , Param ParamListLine
                       | ϵ
-         Statements' -> Statement Statements'
+         StatementsLine -> Statement StatementsLine
                       | ϵ
-            ArgList' -> , Expression ArgList'
+            ArgListLine -> , Expression ArgListLine
                       | ϵ
 
 
