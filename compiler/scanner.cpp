@@ -89,6 +89,8 @@ Token *Scanner::nextToken()
                 lineID++;
                 state = 34;
             }
+            else if (input[pos] == ',')
+                state = 37;
             else
                 lexicalError();
             // cout << state << " ";
@@ -271,7 +273,37 @@ Token *Scanner::nextToken()
             break;
 
         case 31:
-            tok = new Token(ID, lexeme);
+            if (lexeme == "class")
+                tok = new Token(CLASS);
+            else if (lexeme == "extends")
+                tok = new Token(EXTENDS);
+            else if (lexeme == "int")
+                tok = new Token(INT);
+            else if (lexeme == "string")
+                tok = new Token(STRING_T);
+            else if (lexeme == "break")
+                tok = new Token(BREAK);
+            else if (lexeme == "print")
+                tok = new Token(PRINT);
+            else if (lexeme == "read")
+                tok = new Token(READ);
+            else if (lexeme == "return")
+                tok = new Token(RETURN);
+            else if (lexeme == "super")
+                tok = new Token(SUPER);
+            else if (lexeme == "if")
+                tok = new Token(IF);
+            else if (lexeme == "else")
+                tok = new Token(ELSE);
+            else if (lexeme == "for")
+                tok = new Token(FOR);
+            else if (lexeme == "new")
+                tok = new Token(NEW);
+            else if (lexeme == "constructor")
+                tok = new Token(CONSTRUCTOR);
+            else
+                tok = new Token(ID, lexeme);
+
             pos--;
             return tok;
 
@@ -305,6 +337,10 @@ Token *Scanner::nextToken()
                 state = 17;
             pos++;
             break;
+
+        case 37:
+            tok = new Token(SEP, COMMA);
+            return tok;
 
         default:
             lexicalError();

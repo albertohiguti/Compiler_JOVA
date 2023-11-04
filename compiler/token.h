@@ -44,6 +44,7 @@ enum Attributes
     RBRACE,      // 18
     DOT,         // 19
     SEMICOLON,   // 20
+    COMMA,       // 21
 
     // string
     QUOTE,  // 21
@@ -54,6 +55,22 @@ enum Attributes
     LINECOMMENT,   // 24
     LBLOCKCOMMENT, // 25
     RBLOCKCOMMENT, // 26
+
+    // reserved words
+    CLASS,      // 27
+    EXTENDS,    // 28
+    INT,        // 29
+    STRING_T,   // 30
+    BREAK,      // 31
+    PRINT,      // 32
+    READ,       // 33
+    RETURN,     // 34
+    SUPER,      // 35
+    IF,         // 36
+    ELSE,       // 37
+    FOR,        // 38
+    NEW,        // 39
+    CONSTRUCTOR // 40
 };
 
 class Token

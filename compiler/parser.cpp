@@ -21,33 +21,498 @@ void Parser::match(int t)
 void Parser::run()
 {
 	advance();
-
 	program();
-
 	cout << "Compilação encerrada com sucesso!\n";
 }
 
 void Parser::program()
 {
-	// TODO
-	mainClass();
+	classList();
 }
 
-// Continuar....
-
-void Parser::mainClass()
+void Parser::classList()
 {
+	classDecl();
+
+	if (lToken->name != END_OF_FILE)
+		classList();
+}
+
+void Parser::classDecl()
+{
+	match(CLASS);
+	match(ID);
+
+	if (lToken->attribute == EXTENDS)
+	{
+		match(EXTENDS);
+		match(ID);
+	}
+
+	classBody();
+}
+
+void Parser::classBody()
+{
+	match(LBRACE);
+	varDeclListOpt();
+	constructDeclListOpt();
+	methodDeclListOpt();
+	match(RBRACE);
+}
+
+void Parser::varDeclListOpt()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+		varDeclList();
+}
+
+void Parser::varDeclList()
+{
+	varDecl();
+	varDeclListLine();
+}
+
+void Parser::varDecl()
+{
+	type();
+	if (lToken->attribute == LSQUARE)
+	{
+		match(LSQUARE);
+		match(RSQUARE);
+	}
+
+	match(ID);
+	varDeclOpt();
+	match(SEMICOLON);
+}
+
+void Parser::varDeclOpt()
+{
+	if (lToken->attribute == COMMA)
+	{
+		match(COMMA);
+		match(ID);
+		varDeclOpt();
+	}
+}
+
+void Parser::type()
+{
+	if (lToken->attribute == INT)
+		match(INT);
+	else if (lToken->attribute == STRING_T)
+		match(STRING_T);
+	else
+		match(ID);
+}
+
+void Parser::constructDeclListOpt()
+{
+	if (lToken->attribute == CONSTRUCTOR)
+		constructDeclList();
+}
+
+void Parser::constructDeclList()
+{
+	constructDecl();
+	constructDeclListLine();
+}
+
+void Parser::constructDecl()
+{
+	match(CONSTRUCTOR);
+	methodBody();
+}
+
+void Parser::methodDeclListOpt()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+		methodDeclList();
+}
+
+void Parser::methodDeclList()
+{
+	methodDecl();
+	methodDeclListLine();
+}
+
+void Parser::methodDecl()
+{
+	type();
+	if (lToken->attribute == LSQUARE)
+	{
+		match(LSQUARE);
+		match(RSQUARE);
+	}
+
+	match(ID);
+	methodBody();
+}
+
+void Parser::methodBody()
+{
+	match(LPARENTESES);
+	paramListOpt();
+	match(RPARENTESES);
+	match(LBRACE);
+	statementsOpt();
+	match(RBRACE);
+}
+
+void Parser::paramListOpt()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+		paramList();
+}
+
+void Parser::paramList()
+{
+	param();
+	paramListLine();
+}
+
+void Parser::param()
+{
+	type();
+	if (lToken->attribute == LSQUARE)
+	{
+		match(LSQUARE);
+		match(RSQUARE);
+	}
+
+	match(ID);
+}
+
+void Parser::statementsOpt()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID || lToken->attribute == PRINT || lToken->attribute == READ || lToken->attribute == RETURN || lToken->attribute == SUPER || lToken->attribute == IF || lToken->attribute == FOR || lToken->attribute == BREAK || lToken->attribute == SEMICOLON)
+		statements();
+}
+
+void Parser::statements()
+{
+	statement();
+	statementsLine();
+}
+
+void Parser::statement()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T)
+		varDeclList();
+	else if (lToken->attribute == ID)
+	{
+		// find how to solve the ambiguity
+	}
+	else if (lToken->attribute == PRINT)
+	{
+		printStat();
+		match(SEMICOLON);
+	}
+	else if (lToken->attribute == READ)
+	{
+		readStat();
+		match(SEMICOLON);
+	}
+	else if (lToken->attribute == RETURN)
+	{
+		returnStat();
+		match(SEMICOLON);
+	}
+	else if (lToken->attribute == SUPER)
+	{
+		superStat();
+		match(SEMICOLON);
+	}
+	else if (lToken->attribute == IF)
+		ifStat();
+	else if (lToken->attribute == FOR)
+		forStat();
+	else if (lToken->attribute == BREAK)
+	{
+		match(BREAK);
+		match(SEMICOLON);
+	}
+	else
+		match(SEMICOLON);
+}
+
+void Parser::atribStat()
+{
+	lValue();
+	match(ASSIGN);
+	if (lToken->attribute == NEW)
+		AllocExpression();
+	else
+		expression();
+}
+
+void Parser::printStat()
+{
+	match(PRINT);
+	expression();
+}
+
+void Parser::readStat()
+{
+	match(READ);
+	lValue();
+}
+
+void Parser::returnStat()
+{
+	match(RETURN);
+	expression();
+}
+
+void Parser::superStat()
+{
+	match(SUPER);
+	match(LPARENTESES);
+	argListOpt();
+	match(RPARENTESES);
+}
+
+void Parser::ifStat()
+{
+	match(IF);
+	match(LPARENTESES);
+	expression();
+	match(RPARENTESES);
+	match(LBRACE);
+	statements();
+	match(RBRACE);
+
+	if (lToken->attribute == ELSE)
+	{
+		match(ELSE);
+		match(LBRACE);
+		statements();
+		match(RBRACE);
+	}
+}
+
+void Parser::forStat()
+{
+	match(FOR);
+	match(LPARENTESES);
+	atribStatOpt();
+	match(SEMICOLON);
+	expressionOpt();
+	match(SEMICOLON);
+	atribStatOpt();
+	match(RPARENTESES);
+	match(LBRACE);
+	statements();
+	match(RBRACE);
+}
+
+void Parser::atribStatOpt()
+{
+	if (lToken->attribute == ID)
+		lValue();
+	match(ASSIGN);
+	if (lToken->attribute == NEW)
+		AllocExpression();
+	else
+		expression();
+}
+
+void Parser::expressionOpt()
+{
+	if (lToken->attribute == ADD || lToken->attribute == SUB)
+		expression();
+}
+
+void Parser::lValue()
+{
+	match(ID);
+	lValueComp();
+}
+
+void Parser::lValueComp()
+{
+	if (lToken->attribute == DOT)
+	{
+		match(DOT);
+		match(ID);
+		if (lToken->attribute == LSQUARE)
+		{
+			match(LSQUARE);
+			expression();
+			match(RSQUARE);
+		}
+		else if (lToken->attribute == LPARENTESES)
+		{
+			match(LPARENTESES);
+			argListOpt();
+			match(RPARENTESES);
+		}
+		lValueComp();
+	}
+	else if (lToken->attribute == LSQUARE)
+	{
+		match(LSQUARE);
+		expression();
+		match(RSQUARE);
+		lValueComp();
+	}
+}
+
+void Parser::expression()
+{
+	numExpression();
+
+	if (lToken->name == OP)
+	{
+		match(lToken->attribute);
+		numExpression();
+	}
+}
+
+void Parser::AllocExpression()
+{
+	if (lToken->attribute == NEW)
+	{
+		match(NEW);
+		match(ID);
+		match(LPARENTESES);
+		argListOpt();
+		match(RPARENTESES);
+	}
+	else
+	{
+		type();
+		match(LSQUARE);
+		expression();
+		match(RSQUARE);
+	}
+}
+
+void Parser::numExpression()
+{
+	term();
+
+	if (lToken->attribute == ADD || lToken->attribute == SUB)
+	{
+		match(lToken->attribute);
+		term();
+	}
+}
+
+void Parser::term()
+{
+	unaryExpression();
+
+	if (lToken->attribute == MUL || lToken->attribute == DIV || lToken->attribute == MODULE)
+	{
+		match(lToken->attribute);
+		unaryExpression();
+	}
+}
+
+void Parser::unaryExpression()
+{
+	match(lToken->attribute);
+	factor();
+}
+
+void Parser::factor()
+{
+	if (lToken->name == INTEGER_LITERAL)
+		match(INTEGER_LITERAL);
+	else if (lToken->name == STRING)
+		match(STRING);
+	else if (lToken->attribute == ID)
+	{
+		lValueComp();
+	}
+	else
+	{
+		match(LPARENTESES);
+		expression();
+		match(RPARENTESES);
+	}
+}
+
+void Parser::argListOpt()
+{
+	if (lToken->attribute == ADD || lToken->attribute == SUB)
+		argList();
+}
+
+void Parser::argList()
+{
+	expression();
+	argListLine();
+}
+
+void Parser::varDeclListLine()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	{
+		varDecl();
+		varDeclListLine();
+	}
+}
+
+void Parser::constructDeclListLine()
+{
+	if (lToken->atrr == CONSTRUCTOR)
+	{
+		constructDecl();
+		constructDeclListLine();
+	}
+}
+
+void Parser::methodDeclListLine()
+{
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	{
+		methodDecl();
+		methodDeclListLine();
+	}
+}
+
+void Parser::paramListLine()
+{
+	if (lToken->attribute == COMMA)
+	{
+		match(COMMA);
+		param();
+		paramListLine();
+	}
+}
+
+void Parser::statementsLine()
+{
+	// solve the first ambiguity to solve this method
+	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID || lToken->attribute == PRINT || lToken->attribute == READ || lToken->attribute == RETURN || lToken->attribute == SUPER || lToken->attribute == IF || lToken->attribute == FOR || lToken->attribute == BREAK || lToken->attribute == SEMICOLON)
+	{
+		statement();
+		statementsLine();
+	}
+}
+
+void Parser::argListLine()
+{
+	if (lToken->attribute == COMMA)
+	{
+		match(COMMA);
+		expression();
+		argListLine();
+	}
 }
 
 void Parser::error(string str)
 {
-	cout << "Linha " << scanner->getLine() << ": " << str << endl;
+	// cout << "Linha " << scanner->getLine() << ": " << str << endl;
 
 	exit(EXIT_FAILURE);
 }
 
 /*
-			 Program -> ClassList
+Program -> ClassList
 					  | ϵ
 		   ClassList -> ClassDecl ClassList
 					  | ClassDecl
@@ -56,7 +521,7 @@ void Parser::error(string str)
 		   ClassBody -> { VarDeclListOpt ConstructDeclListOpt MethodDeclListOpt }
 	  VarDeclListOpt -> VarDeclList
 					  | ϵ
-		 VarDeclList -> VarDecl VarDeclList'
+		 VarDeclList -> VarDecl VarDeclListLine
 			 VarDecl -> Type ID VarDeclOpt ;
 					  | Type [] ID VarDeclOpt ;
 		  VarDeclOpt -> , ID VarDeclOpt
@@ -66,36 +531,21 @@ void Parser::error(string str)
 					  | ID
 	ConstructDeclListOpt -> ConstructDeclList
 					  | ϵ
-	ConstructDeclList -> ConstructDecl ConstructDeclList'
+	ConstructDeclList -> ConstructDecl ConstructDeclListLine
 	   ConstructDecl -> constructor MethodBody
 	MethodDeclListOpt -> MethodDeclList
 					  | ϵ
-	  MethodDeclList -> MethodDecl MethodDeclList'
-		  MethodDecl -> int ID MethodBody
-					  | string ID MethodBody
-					  | ID ID MethodBody
-					  | int [] id MethodBody
-					  | string [] id MethodBody
-					  | ID [] id MethodBody
+	  MethodDeclList -> MethodDecl MethodDeclListLine
+		  MethodDecl -> Type ID MethodBody | Type [] ID MethodBody
 		  MethodBody -> ( ParamListOpt ) { StatementsOpt }
 		ParamListOpt -> ParamList
 					  | ϵ
-		   ParamList -> Param ParamList'
-			   Param -> int ID
-					  | string ID
-					  | ID ID
-					  | int [] ID
-					  | string [] ID
-					  | ID [] ID
+		   ParamList -> Param ParamListLine
+			   Param -> Type ID | Type [] ID
 	   StatementsOpt -> Statements
 					  | ϵ
-		  Statements -> Statement Statements'
-		   Statement -> int ID VarDeclOpt ; VarDeclList'
-					  | string ID VarDeclOpt ; VarDeclList'
-					  | ID ID VarDeclOpt ; VarDeclList'
-					  | int [] ID VarDeclOpt ; VarDeclList'
-					  | string [] ID VarDeclOpt ; VarDeclList'
-					  | ID [] ID VarDeclOpt ; VarDeclList'
+		  Statements -> Statement StatementsLine
+		   Statement -> VarDeclList
 					  | AtribStat ;
 					  | PrintStat ;
 					  | ReadStat ;
@@ -128,9 +578,7 @@ void Parser::error(string str)
 		  Expression -> NumExpression
 					  | NumExpression RelOp NumExpression
 	 AllocExpression -> new ID ( ArgListOpt )
-					  | int [ Expression ]
-					  | string [ Expression ]
-					  | ID [ Expression ]
+					  | Type [ Expression ]
 	   NumExpression -> Term + Term
 					  | Term - Term
 					  | Term
@@ -144,119 +592,19 @@ void Parser::error(string str)
 					  | STRING_LITERAL
 					  | ID LValueComp
 					  | ( Expression )
-		  ArgListOpt -> ArgList
+		ArgListOpt -> ArgList
 					  | ϵ
-			 ArgList -> + Factor * UnaryExpression + Term ArgList'
-					  | - Factor * UnaryExpression + Term ArgList'
-					  | + Factor / UnaryExpression + Term ArgList'
-					  | - Factor / UnaryExpression + Term ArgList'
-					  | + Factor % UnaryExpression + Term ArgList'
-					  | - Factor % UnaryExpression + Term ArgList'
-					  | + Factor + Term ArgList'
-					  | - Factor + Term ArgList'
-					  | + Factor * UnaryExpression - Term ArgList'
-					  | - Factor * UnaryExpression - Term ArgList'
-					  | + Factor / UnaryExpression - Term ArgList'
-					  | - Factor / UnaryExpression - Term ArgList'
-					  | + Factor % UnaryExpression - Term ArgList'
-					  | - Factor % UnaryExpression - Term ArgList'
-					  | + Factor - Term ArgList'
-					  | - Factor - Term ArgList'
-					  | + Factor * UnaryExpression ArgList'
-					  | - Factor * UnaryExpression ArgList'
-					  | + Factor / UnaryExpression ArgList'
-					  | - Factor / UnaryExpression ArgList'
-					  | + Factor % UnaryExpression ArgList'
-					  | - Factor % UnaryExpression ArgList'
-					  | + Factor ArgList'
-					  | - Factor ArgList'
-					  | + Factor * UnaryExpression + Term RelOp NumExpression ArgList'
-					  | - Factor * UnaryExpression + Term RelOp NumExpression ArgList'
-					  | + Factor / UnaryExpression + Term RelOp NumExpression ArgList'
-					  | - Factor / UnaryExpression + Term RelOp NumExpression ArgList'
-					  | + Factor % UnaryExpression + Term RelOp NumExpression ArgList'
-					  | - Factor % UnaryExpression + Term RelOp NumExpression ArgList'
-					  | + Factor + Term RelOp NumExpression ArgList'
-					  | - Factor + Term RelOp NumExpression ArgList'
-					  | + Factor * UnaryExpression - Term RelOp NumExpression ArgList'
-					  | - Factor * UnaryExpression - Term RelOp NumExpression ArgList'
-					  | + Factor / UnaryExpression - Term RelOp NumExpression ArgList'
-					  | - Factor / UnaryExpression - Term RelOp NumExpression ArgList'
-					  | + Factor % UnaryExpression - Term RelOp NumExpression ArgList'
-					  | - Factor % UnaryExpression - Term RelOp NumExpression ArgList'
-					  | + Factor - Term RelOp NumExpression ArgList'
-					  | - Factor - Term RelOp NumExpression ArgList'
-					  | + Factor * UnaryExpression RelOp NumExpression ArgList'
-					  | - Factor * UnaryExpression RelOp NumExpression ArgList'
-					  | + Factor / UnaryExpression RelOp NumExpression ArgList'
-					  | - Factor / UnaryExpression RelOp NumExpression ArgList'
-					  | + Factor % UnaryExpression RelOp NumExpression ArgList'
-					  | - Factor % UnaryExpression RelOp NumExpression ArgList'
-					  | + Factor RelOp NumExpression ArgList'
-					  | - Factor RelOp NumExpression ArgList'
-		VarDeclList' -> VarDecl VarDeclList'
+		ArgList -> Expression ArgListLine
+	VarDeclListLine -> VarDecl VarDeclListLine
 					  | ϵ
-	ConstructDeclList' -> ConstructDecl ConstructDeclList'
+	ConstructDeclListLine -> ConstructDecl ConstructDeclListLine
 					  | ϵ
-	 MethodDeclList' -> MethodDecl MethodDeclList'
+	 MethodDeclListLine -> MethodDecl MethodDeclListLine
 					  | ϵ
-		  ParamList' -> , Param ParamList'
+		  ParamListLine -> , Param ParamListLine
 					  | ϵ
-		 Statements' -> Statement Statements'
+		 StatementsLine -> Statement StatementsLine
 					  | ϵ
-			ArgList' -> , Expression ArgList'
+			ArgListLine -> , Expression ArgListLine
 					  | ϵ
 */
-
-// Program -> ClassList | ϵ
-// ClassList -> ClassDecl ClassList | ClassDecl
-// ClassDecl -> class ID ClassBody | class ID extends ID ClassBody
-// ClassBody -> { VarDeclListOpt ConstructDeclListOpt MethodDeclListOpt }
-// VarDeclListOpt -> VarDeclList | ϵ
-// VarDeclList -> VarDecl VarDeclListTail
-// VarDeclListTail -> , VarDecl VarDeclListTail | ϵ
-// VarDecl -> Type VarDeclRest ;
-// VarDeclRest -> ID VarDeclOpt | [] ID VarDeclOpt
-// VarDeclOpt -> , ID VarDeclOpt | ϵ
-// Type -> int | string | ID
-// ConstructDeclListOpt -> ConstructDeclList | ϵ
-// ConstructDeclList -> ConstructDecl ConstructDeclList
-// ConstructDecl -> constructor MethodBody
-// MethodDeclListOpt -> MethodDeclList | ϵ
-// MethodDeclList -> MethodDecl MethodDeclList
-// MethodDecl -> Type ID MethodBody | Type [] ID MethodBody
-// MethodBody -> ( ParamListOpt ) { StatementsOpt }
-// ParamListOpt -> ParamList | ϵ
-// ParamList -> Param ParamListTail
-// ParamListTail -> , Param ParamListTail | ϵ
-// Param -> Type ID ParamRest
-// ParamRest -> ϵ | [] ID ParamRest
-// StatementsOpt -> Statements | ϵ
-// Statements -> Statement StatementsTail
-// StatementsTail -> Statement StatementsTail | ϵ
-// Statement -> VarDeclList | AtribStat | PrintStat | ReadStat | ReturnStat | SuperStat | IfStat | ForStat | break ; | ;
-// AtribStat -> LValue = Expression | LValue = AllocExpression
-// PrintStat -> print Expression
-// ReadStat -> read LValue
-// ReturnStat -> return Expression
-// SuperStat -> super ( ArgListOpt )
-// IfStat -> if ( Expression ) { Statements } ElseOpt
-// ElseOpt -> else { Statements } | ϵ
-// ForStat -> for ( AtribStatOpt ; ExpressionOpt ; AtribStatOpt ) { Statements }
-// AtribStatOpt -> AtribStat | ϵ
-// ExpressionOpt -> Expression | ϵ
-// LValue -> ID LValueComp
-// LValueComp -> LValueCompTail
-// LValueCompTail -> . ID LValueCompTail | [ Expression ] LValueCompTail | ( ArgListOpt ) LValueCompTail | ϵ
-// Expression -> NumExpression ExpressionTail
-// ExpressionTail -> RelOp NumExpression ExpressionTail | ϵ
-// AllocExpression -> new ID ( ArgListOpt ) | Type [ Expression ]
-// NumExpression -> Term NumExpressionTail
-// NumExpressionTail -> + Term NumExpressionTail | - Term NumExpressionTail | ϵ
-// Term -> UnaryExpression TermTail
-// TermTail -> * UnaryExpression TermTail | / UnaryExpression TermTail | % UnaryExpression TermTail | ϵ
-// UnaryExpression -> + Factor | - Factor | Factor
-// Factor -> INTEGER_LITERAL | STRING_LITERAL | LValue | ( Expression )
-// ArgListOpt -> ArgList | ϵ
-// ArgList -> Expression ArgListTail
-// ArgListTail -> , Expression ArgListTail | ϵ

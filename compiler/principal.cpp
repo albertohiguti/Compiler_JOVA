@@ -1,4 +1,5 @@
 #include "scanner.h"
+#include "parser.h"
 
 string *attributes_translator, *name_translator;
 
