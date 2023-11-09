@@ -9,13 +9,27 @@ using namespace std;
 
 enum Names
 {
-    ID,
-    INTEGER_LITERAL,
-    OP,
-    SEP,
-    STRING,
-    COMMENT,
-    END_OF_FILE
+    ID,              // 0
+    INTEGER_LITERAL, // 1
+    OP,              // 2
+    SEP,             // 3
+    STRING,          // 4
+    COMMENT,         // 5
+    END_OF_FILE,     // 6
+    CLASS,           // 7
+    EXTENDS,         // 8
+    INT,             // 9
+    STRING_T,        // 10
+    BREAK,           // 11
+    PRINT,           // 12
+    READ,            // 13
+    RETURN,          // 14
+    SUPER,           // 15
+    IF,              // 16
+    ELSE,            // 17
+    FOR,             // 18
+    NEW,             // 19
+    CONSTRUCTOR      // 20
 };
 
 enum Attributes
@@ -55,22 +69,6 @@ enum Attributes
     LINECOMMENT,   // 24
     LBLOCKCOMMENT, // 25
     RBLOCKCOMMENT, // 26
-
-    // reserved words
-    CLASS,      // 27
-    EXTENDS,    // 28
-    INT,        // 29
-    STRING_T,   // 30
-    BREAK,      // 31
-    PRINT,      // 32
-    READ,       // 33
-    RETURN,     // 34
-    SUPER,      // 35
-    IF,         // 36
-    ELSE,       // 37
-    FOR,        // 38
-    NEW,        // 39
-    CONSTRUCTOR // 40
 };
 
 class Token

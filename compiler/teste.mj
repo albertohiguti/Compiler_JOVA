@@ -1,27 +1,26 @@
-int a = 5;
-// comentario de teste
-int b = 7;
 
-/*outro 
-comentario de teste*/
-int resultado = a + b;
-print("A soma de e igual a ");
 
-float expressao_numerica;
-expressao_numerica = {a / [b + 2] - 3} * (a + b);
+class main {
+    int a, b;
+    // comentario de teste
+    int b;
+    string c;
 
-if (a > b) {
-    print("A e maior que B");
-} else if (a < b) {
-    print("A e menor que B");
-} else if (a == b) {
-    print("A e igual a B");
-} else if (a != b) {
-    print("A e diferente de B");
-} else if (a >= b) {
-    print("A e maior ou igual a B");
-} else if (a <= b) {
-    print("A e menor ou igual a B");
-} else {
-    print("A e B nao sao comparaveis");
+    constructor () {
+        a = + 1;
+        b = + 2;
+        
+
+        c = "teste";
+    }
+
+    int soma (int a, int b) {
+        int c;
+        c = a + b;
+        return c;
+    }
+
+    /*outro 
+    comentario de teste*/
+    
 }

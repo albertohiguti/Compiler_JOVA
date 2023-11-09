@@ -3,19 +3,32 @@
 Parser::Parser(string input)
 {
 	scanner = new Scanner(input);
+	this->createEnumTranslator();
 }
 
 void Parser::advance()
 {
 	lToken = scanner->nextToken();
+	std::cout << "Leu o token " << name_translator[lToken->name] << " " << attributes_translator[lToken->attribute] << " " << lToken->lexeme << "\n";
+}
+
+void Parser::lookAhead(int pseudoPos)
+{
+	cToken = scanner->checkNextToken(pseudoPos);
 }
 
 void Parser::match(int t)
 {
+	std::string name = name_translator[t];
+	std::string attribute = attributes_translator[t];
+	std::string tokenName = name_translator[lToken->name];
+	std::string tokenAttribute = attributes_translator[lToken->attribute];
+
+	std::cout << "Tring to match " << tokenName << " Or " << tokenAttribute << " With " << name << " Or " << attribute << "\n";
 	if (lToken->name == t || lToken->attribute == t)
 		advance();
 	else
-		error("Erro inesperado");
+		error("Erro inesperado " + std::to_string(lToken->name) + " " + std::to_string(lToken->attribute) + " " + std::to_string(t));
 }
 
 void Parser::run()
@@ -63,7 +76,7 @@ void Parser::classBody()
 
 void Parser::varDeclListOpt()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 		varDeclList();
 }
 
@@ -99,9 +112,9 @@ void Parser::varDeclOpt()
 
 void Parser::type()
 {
-	if (lToken->attribute == INT)
+	if (lToken->name == INT)
 		match(INT);
-	else if (lToken->attribute == STRING_T)
+	else if (lToken->name == STRING_T)
 		match(STRING_T);
 	else
 		match(ID);
@@ -109,7 +122,7 @@ void Parser::type()
 
 void Parser::constructDeclListOpt()
 {
-	if (lToken->attribute == CONSTRUCTOR)
+	if (lToken->name == CONSTRUCTOR)
 		constructDeclList();
 }
 
@@ -127,7 +140,7 @@ void Parser::constructDecl()
 
 void Parser::methodDeclListOpt()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 		methodDeclList();
 }
 
@@ -162,7 +175,7 @@ void Parser::methodBody()
 
 void Parser::paramListOpt()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 		paramList();
 }
 
@@ -186,7 +199,7 @@ void Parser::param()
 
 void Parser::statementsOpt()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID || lToken->attribute == PRINT || lToken->attribute == READ || lToken->attribute == RETURN || lToken->attribute == SUPER || lToken->attribute == IF || lToken->attribute == FOR || lToken->attribute == BREAK || lToken->attribute == SEMICOLON)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID || lToken->name == PRINT || lToken->name == READ || lToken->name == RETURN || lToken->name == SUPER || lToken->name == IF || lToken->name == FOR || lToken->name == BREAK || lToken->attribute == SEMICOLON)
 		statements();
 }
 
@@ -198,37 +211,53 @@ void Parser::statements()
 
 void Parser::statement()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T)
+	if (lToken->name == INT || lToken->name == STRING_T)
 		varDeclList();
-	else if (lToken->attribute == ID)
+	else if (lToken->name == ID)
 	{
-		// find how to solve the ambiguity
+		lookAhead();
+		std::cout << "Look ahead result: " << name_translator[cToken->name] << " " << attributes_translator[cToken->attribute] << "\n";
+		if (cToken->attribute == ASSIGN)
+			atribStat();
+		else if (cToken->attribute == DOT)
+			atribStat();
+		else if (cToken->attribute == ID)
+			varDeclList();
+		else if (cToken->attribute == LSQUARE)
+		{
+			lookAhead(scanner->getPos() + 1);
+			std::cout << "Look ahead result: " << name_translator[cToken->name] << " " << attributes_translator[cToken->attribute] << "\n";
+			if (cToken->attribute == RSQUARE)
+				varDeclList();
+			else
+				atribStat();
+		}
 	}
-	else if (lToken->attribute == PRINT)
+	else if (lToken->name == PRINT)
 	{
 		printStat();
 		match(SEMICOLON);
 	}
-	else if (lToken->attribute == READ)
+	else if (lToken->name == READ)
 	{
 		readStat();
 		match(SEMICOLON);
 	}
-	else if (lToken->attribute == RETURN)
+	else if (lToken->name == RETURN)
 	{
 		returnStat();
 		match(SEMICOLON);
 	}
-	else if (lToken->attribute == SUPER)
+	else if (lToken->name == SUPER)
 	{
 		superStat();
 		match(SEMICOLON);
 	}
-	else if (lToken->attribute == IF)
+	else if (lToken->name == IF)
 		ifStat();
-	else if (lToken->attribute == FOR)
+	else if (lToken->name == FOR)
 		forStat();
-	else if (lToken->attribute == BREAK)
+	else if (lToken->name == BREAK)
 	{
 		match(BREAK);
 		match(SEMICOLON);
@@ -241,7 +270,7 @@ void Parser::atribStat()
 {
 	lValue();
 	match(ASSIGN);
-	if (lToken->attribute == NEW)
+	if (lToken->name == NEW)
 		AllocExpression();
 	else
 		expression();
@@ -283,7 +312,7 @@ void Parser::ifStat()
 	statements();
 	match(RBRACE);
 
-	if (lToken->attribute == ELSE)
+	if (lToken->name == ELSE)
 	{
 		match(ELSE);
 		match(LBRACE);
@@ -309,10 +338,10 @@ void Parser::forStat()
 
 void Parser::atribStatOpt()
 {
-	if (lToken->attribute == ID)
+	if (lToken->name == ID)
 		lValue();
 	match(ASSIGN);
-	if (lToken->attribute == NEW)
+	if (lToken->name == NEW)
 		AllocExpression();
 	else
 		expression();
@@ -372,7 +401,7 @@ void Parser::expression()
 
 void Parser::AllocExpression()
 {
-	if (lToken->attribute == NEW)
+	if (lToken->name == NEW)
 	{
 		match(NEW);
 		match(ID);
@@ -423,7 +452,7 @@ void Parser::factor()
 		match(INTEGER_LITERAL);
 	else if (lToken->name == STRING)
 		match(STRING);
-	else if (lToken->attribute == ID)
+	else if (lToken->name == ID)
 	{
 		lValueComp();
 	}
@@ -449,7 +478,7 @@ void Parser::argList()
 
 void Parser::varDeclListLine()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 	{
 		varDecl();
 		varDeclListLine();
@@ -458,7 +487,7 @@ void Parser::varDeclListLine()
 
 void Parser::constructDeclListLine()
 {
-	if (lToken->atrr == CONSTRUCTOR)
+	if (lToken->name == CONSTRUCTOR)
 	{
 		constructDecl();
 		constructDeclListLine();
@@ -467,7 +496,7 @@ void Parser::constructDeclListLine()
 
 void Parser::methodDeclListLine()
 {
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 	{
 		methodDecl();
 		methodDeclListLine();
@@ -486,8 +515,7 @@ void Parser::paramListLine()
 
 void Parser::statementsLine()
 {
-	// solve the first ambiguity to solve this method
-	if (lToken->attribute == INT || lToken->attribute == STRING_T || lToken->attribute == ID || lToken->attribute == PRINT || lToken->attribute == READ || lToken->attribute == RETURN || lToken->attribute == SUPER || lToken->attribute == IF || lToken->attribute == FOR || lToken->attribute == BREAK || lToken->attribute == SEMICOLON)
+	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID || lToken->name == PRINT || lToken->name == READ || lToken->name == RETURN || lToken->name == SUPER || lToken->name == IF || lToken->name == FOR || lToken->name == BREAK || lToken->attribute == SEMICOLON)
 	{
 		statement();
 		statementsLine();
@@ -506,11 +534,67 @@ void Parser::argListLine()
 
 void Parser::error(string str)
 {
-	// cout << "Linha " << scanner->getLine() << ": " << str << endl;
+	cout << str << endl;
 
 	exit(EXIT_FAILURE);
 }
 
+void Parser::createEnumTranslator()
+{
+	attributes_translator = new string[28]{
+		"UNDEF",		 // 0
+		"EQ",			 // 1
+		"NE",			 // 2
+		"GT",			 // 3
+		"GE",			 // 4
+		"LT",			 // 5
+		"LE",			 // 6
+		"ASSIGN",		 // 7
+		"ADD",			 // 8
+		"SUB",			 // 9
+		"MUL",			 // 10
+		"DIV",			 // 11
+		"MODULE",		 // 12
+		"LPARENTESES",	 // 13
+		"RPARENTESES",	 // 14
+		"LSQUARE",		 // 15
+		"RSQUARE",		 // 16
+		"LBRACE",		 // 17
+		"RBRACE",		 // 18
+		"DOT",			 // 19
+		"SEMICOLON",	 // 20
+		"COMMA",		 // 21
+		"QUOTE",		 // 22
+		"LQUOTE",		 // 23
+		"RQUOTE",		 // 24
+		"LINECOMMENT",	 // 25
+		"LBLOCKCOMMENT", // 26
+		"RBLOCKCOMMENT"	 // 27
+	};
+
+	name_translator = new string[28]{
+		"ID",
+		"INTEGER_LITERAL",
+		"OP",
+		"SEP",
+		"STRING",
+		"COMMENT",
+		"END_OF_FILE",
+		"CLASS",
+		"EXTENDS",
+		"INT",
+		"STRING_T",
+		"BREAK",
+		"PRINT",
+		"READ",
+		"RETURN",
+		"SUPER",
+		"IF",
+		"ELSE",
+		"FOR",
+		"NEW",
+		"CONSTRUCTOR"};
+}
 /*
 Program -> ClassList
 					  | ϵ

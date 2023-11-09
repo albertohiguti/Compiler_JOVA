@@ -355,3 +355,335 @@ void Scanner::lexicalError()
 
     exit(EXIT_FAILURE);
 }
+
+Token *Scanner::checkNextToken(int pseudoPos)
+{
+    Token *tok;
+    int state = 0;
+    string lexeme = "";
+
+    if (pseudoPos == -1)
+        pseudoPos = pos;
+
+    while (true)
+    {
+        // std::cout << "Analyzing: " << input[pseudoPos] << " in position " << pseudoPos << " and in State " << state << "\n";
+
+        switch (state)
+        {
+        case 0: // case 9: case12: case22:
+            if (input[pseudoPos] == '\0')
+            {
+                tok = new Token(END_OF_FILE);
+                return tok;
+            }
+            if (input[pseudoPos] == '<')
+                state = 1;
+            else if (input[pseudoPos] == '>')
+                state = 4;
+            else if (input[pseudoPos] == '=')
+                state = 7;
+            else if (input[pseudoPos] == '+')
+                state = 10;
+            else if (input[pseudoPos] == '-')
+                state = 11;
+            else if (input[pseudoPos] == '*')
+                state = 12;
+            else if (input[pseudoPos] == '/')
+                state = 15;
+            else if (input[pseudoPos] == '%')
+                state = 19;
+            else if (input[pseudoPos] == '!')
+                state = 20;
+            else if (input[pseudoPos] == '(')
+                state = 22;
+            else if (input[pseudoPos] == ')')
+                state = 23;
+            else if (input[pseudoPos] == '[')
+                state = 24;
+            else if (input[pseudoPos] == ']')
+                state = 25;
+            else if (input[pseudoPos] == '{')
+                state = 26;
+            else if (input[pseudoPos] == '}')
+                state = 27;
+            else if (input[pseudoPos] == ';')
+                state = 28;
+            else if (input[pseudoPos] == '"')
+                state = 29;
+            else if (isalpha(input[pseudoPos]))
+                state = 30;
+            else if (input[pseudoPos] == '_')
+                state = 30;
+            else if (isdigit(input[pseudoPos]))
+                state = 32;
+            else if (isspace(input[pseudoPos]))
+                state = 34;
+            else if (input[pseudoPos] == '\n')
+            {
+                lineID++;
+                state = 34;
+            }
+            else if (input[pseudoPos] == ',')
+                state = 37;
+            else
+                lexicalError();
+            // cout << state << " ";
+            lexeme += input[pseudoPos];
+            pseudoPos++;
+
+            break;
+        case 1:
+            if (input[pseudoPos] == '=')
+                state = 2;
+            else
+                state = 3;
+            pseudoPos++;
+            break;
+
+        case 2:
+            tok = new Token(OP, LE);
+            return tok;
+
+        case 3:
+            tok = new Token(OP, LT);
+            return tok;
+
+        case 4:
+            if (input[pseudoPos] == '=')
+                state = 5;
+            else
+                state = 6;
+            pseudoPos++;
+            break;
+
+        case 5:
+            tok = new Token(OP, GE);
+            return tok;
+
+        case 6:
+            tok = new Token(OP, GT);
+            return tok;
+
+        case 7:
+            if (input[pseudoPos] == '=')
+                state = 8;
+            else
+                state = 9;
+            pseudoPos++;
+            break;
+
+        case 8:
+            tok = new Token(OP, EQ);
+            return tok;
+
+        case 9:
+            tok = new Token(OP, ASSIGN);
+            return tok;
+
+        case 10:
+            tok = new Token(OP, ADD);
+            return tok;
+
+        case 11:
+            tok = new Token(OP, SUB);
+            return tok;
+
+        case 12:
+            if (input[pseudoPos] == '/')
+                state = 13;
+            else
+                state = 14;
+            pseudoPos++;
+            break;
+
+        case 13:
+            tok = new Token(COMMENT, RBLOCKCOMMENT);
+            return tok;
+
+        case 14:
+            tok = new Token(OP, MUL);
+            return tok;
+
+        case 15:
+            if (input[pseudoPos] == '/')
+                state = 16;
+            else if (input[pseudoPos] == '*')
+                state = 17;
+            else
+                state = 18;
+            pseudoPos++;
+            break;
+
+        case 16:
+            if (input[pseudoPos] == '\n')
+            {
+                lineID++;
+                state = 34;
+            }
+            else
+                state = 16;
+            pseudoPos++;
+            break;
+
+        case 17:
+            if (input[pseudoPos] == '*')
+                state = 36;
+            else
+                state = 17;
+            pseudoPos++;
+            break;
+
+        case 18:
+            tok = new Token(OP, DIV);
+            return tok;
+
+        case 19:
+            tok = new Token(OP, MODULE);
+            return tok;
+
+        case 20:
+            if (input[pseudoPos] == '=')
+                state = 21;
+            else
+                state = 22;
+            pseudoPos++;
+            break;
+
+        case 21:
+            tok = new Token(OP, NE);
+            return tok;
+
+        case 22:
+            tok = new Token(SEP, LPARENTESES);
+            return tok;
+
+        case 23:
+            tok = new Token(SEP, RPARENTESES);
+            return tok;
+
+        case 24:
+            tok = new Token(SEP, LSQUARE);
+            return tok;
+
+        case 25:
+            tok = new Token(SEP, RSQUARE);
+            return tok;
+
+        case 26:
+            tok = new Token(SEP, LBRACE);
+            return tok;
+
+        case 27:
+            tok = new Token(SEP, RBRACE);
+            return tok;
+
+        case 28:
+            tok = new Token(SEP, SEMICOLON);
+            return tok;
+
+        case 29:
+            if (input[pseudoPos] == '"')
+                state = 35;
+            else
+                state = 29;
+
+            lexeme += input[pseudoPos];
+            pseudoPos++;
+            break;
+
+        case 30:
+            if (isalnum(input[pseudoPos]))
+                state = 30;
+            else if (input[pseudoPos] == '_')
+                state = 30;
+            else
+            {
+                state = 31;
+                pseudoPos++;
+                break;
+            }
+            lexeme += input[pseudoPos];
+            pseudoPos++;
+            break;
+
+        case 31:
+            if (lexeme == "class")
+                tok = new Token(CLASS);
+            else if (lexeme == "extends")
+                tok = new Token(EXTENDS);
+            else if (lexeme == "int")
+                tok = new Token(INT);
+            else if (lexeme == "string")
+                tok = new Token(STRING_T);
+            else if (lexeme == "break")
+                tok = new Token(BREAK);
+            else if (lexeme == "print")
+                tok = new Token(PRINT);
+            else if (lexeme == "read")
+                tok = new Token(READ);
+            else if (lexeme == "return")
+                tok = new Token(RETURN);
+            else if (lexeme == "super")
+                tok = new Token(SUPER);
+            else if (lexeme == "if")
+                tok = new Token(IF);
+            else if (lexeme == "else")
+                tok = new Token(ELSE);
+            else if (lexeme == "for")
+                tok = new Token(FOR);
+            else if (lexeme == "new")
+                tok = new Token(NEW);
+            else if (lexeme == "constructor")
+                tok = new Token(CONSTRUCTOR);
+            else
+                tok = new Token(ID, lexeme);
+
+            pseudoPos--;
+            return tok;
+
+        case 32:
+            if (isdigit(input[pseudoPos]))
+                state = 32;
+            else
+                state = 33;
+
+            pseudoPos++;
+            break;
+
+        case 33:
+            tok = new Token(INTEGER_LITERAL, lexeme);
+            pseudoPos--;
+            return tok;
+
+        case 34:
+            state = 0;
+            lexeme = "";
+            break;
+
+        case 35:
+            tok = new Token(STRING, lexeme);
+            return tok;
+
+        case 36:
+            if (input[pseudoPos] == '/')
+                state = 34;
+            else
+                state = 17;
+            pseudoPos++;
+            break;
+
+        case 37:
+            tok = new Token(SEP, COMMA);
+            return tok;
+
+        default:
+            lexicalError();
+        }
+    }
+}
+
+int Scanner::getPos()
+{
+    return pos;
+}

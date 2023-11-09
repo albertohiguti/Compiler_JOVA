@@ -5,9 +5,13 @@ class Parser
 private:
 	Scanner *scanner;
 	Token *lToken;
+	Token *cToken;
+	string *attributes_translator, *name_translator;
 
 	void advance();
 	void match(int);
+	void lookAhead(int pseudoPos = -1);
+	void createEnumTranslator();
 
 public:
 	Parser(string);
