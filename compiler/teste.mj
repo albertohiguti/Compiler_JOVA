@@ -11,12 +11,12 @@ class main {
         b = + 2;
         
 
-        c = "teste";
+        // c = "teste";
     }
 
     int soma (int a, int b) {
-        int c;
-        c = a + b;
+        // int c;
+        c = 3 + 4;
         return c;
     }
 

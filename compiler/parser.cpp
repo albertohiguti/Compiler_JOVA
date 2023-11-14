@@ -218,11 +218,17 @@ void Parser::statement()
 		lookAhead();
 		std::cout << "Look ahead result: " << name_translator[cToken->name] << " " << attributes_translator[cToken->attribute] << "\n";
 		if (cToken->attribute == ASSIGN)
+		{
 			atribStat();
+		}
 		else if (cToken->attribute == DOT)
+		{
 			atribStat();
+		}
 		else if (cToken->attribute == ID)
+		{
 			varDeclList();
+		}
 		else if (cToken->attribute == LSQUARE)
 		{
 			lookAhead(scanner->getPos() + 1);

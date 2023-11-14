@@ -5,6 +5,8 @@ Scanner::Scanner(string Input)
 {
     pos = 0;
     lineID = 1;
+    st = new SymbolTable();
+    this->populateSymbolTable();
 
     ifstream inputFile(Input);
 
@@ -273,34 +275,10 @@ Token *Scanner::nextToken()
             break;
 
         case 31:
-            if (lexeme == "class")
-                tok = new Token(CLASS);
-            else if (lexeme == "extends")
-                tok = new Token(EXTENDS);
-            else if (lexeme == "int")
-                tok = new Token(INT);
-            else if (lexeme == "string")
-                tok = new Token(STRING_T);
-            else if (lexeme == "break")
-                tok = new Token(BREAK);
-            else if (lexeme == "print")
-                tok = new Token(PRINT);
-            else if (lexeme == "read")
-                tok = new Token(READ);
-            else if (lexeme == "return")
-                tok = new Token(RETURN);
-            else if (lexeme == "super")
-                tok = new Token(SUPER);
-            else if (lexeme == "if")
-                tok = new Token(IF);
-            else if (lexeme == "else")
-                tok = new Token(ELSE);
-            else if (lexeme == "for")
-                tok = new Token(FOR);
-            else if (lexeme == "new")
-                tok = new Token(NEW);
-            else if (lexeme == "constructor")
-                tok = new Token(CONSTRUCTOR);
+            if (st->get(lexeme))
+            {
+                tok = new Token(st->get(lexeme)->token->name, lexeme);
+            }
             else
                 tok = new Token(ID, lexeme);
 
@@ -608,34 +586,10 @@ Token *Scanner::checkNextToken(int pseudoPos)
             break;
 
         case 31:
-            if (lexeme == "class")
-                tok = new Token(CLASS);
-            else if (lexeme == "extends")
-                tok = new Token(EXTENDS);
-            else if (lexeme == "int")
-                tok = new Token(INT);
-            else if (lexeme == "string")
-                tok = new Token(STRING_T);
-            else if (lexeme == "break")
-                tok = new Token(BREAK);
-            else if (lexeme == "print")
-                tok = new Token(PRINT);
-            else if (lexeme == "read")
-                tok = new Token(READ);
-            else if (lexeme == "return")
-                tok = new Token(RETURN);
-            else if (lexeme == "super")
-                tok = new Token(SUPER);
-            else if (lexeme == "if")
-                tok = new Token(IF);
-            else if (lexeme == "else")
-                tok = new Token(ELSE);
-            else if (lexeme == "for")
-                tok = new Token(FOR);
-            else if (lexeme == "new")
-                tok = new Token(NEW);
-            else if (lexeme == "constructor")
-                tok = new Token(CONSTRUCTOR);
+            if (st->get(lexeme))
+            {
+                tok = new Token(st->get(lexeme)->token->name, lexeme);
+            }
             else
                 tok = new Token(ID, lexeme);
 
@@ -686,4 +640,38 @@ Token *Scanner::checkNextToken(int pseudoPos)
 int Scanner::getPos()
 {
     return pos;
+}
+
+void Scanner::populateSymbolTable()
+{
+    Token *t;
+
+    t = new Token(CLASS, "class");
+    st->add(new STEntry(t, true));
+    t = new Token(EXTENDS, "extends");
+    st->add(new STEntry(t, true));
+    t = new Token(INT, "int");
+    st->add(new STEntry(t, true));
+    t = new Token(STRING_T, "string");
+    st->add(new STEntry(t, true));
+    t = new Token(BREAK, "break");
+    st->add(new STEntry(t, true));
+    t = new Token(PRINT, "print");
+    st->add(new STEntry(t, true));
+    t = new Token(READ, "read");
+    st->add(new STEntry(t, true));
+    t = new Token(RETURN, "return");
+    st->add(new STEntry(t, true));
+    t = new Token(SUPER, "super");
+    st->add(new STEntry(t, true));
+    t = new Token(IF, "if");
+    st->add(new STEntry(t, true));
+    t = new Token(ELSE, "else");
+    st->add(new STEntry(t, true));
+    t = new Token(FOR, "for");
+    st->add(new STEntry(t, true));
+    t = new Token(NEW, "new");
+    st->add(new STEntry(t, true));
+    t = new Token(CONSTRUCTOR, "constructor");
+    st->add(new STEntry(t, true));
 }
