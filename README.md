@@ -1,5 +1,5 @@
 # Compiler_X++
-
+<!-- Autores: Eduardo Lopes de Lemos e Alberto Y. Hisano Higuti -->
 ## Observações
 
 Caso você esteja usando o editor de código VSCode é possível visualizar esse arquivo README como se estivesse em um navegador, para isso basta clicar no botão "Open Preview" no canto superior direito da tela.
@@ -11,9 +11,8 @@ Este repositório contém um arquivo chamado teste.xpp que tenta abordar todos o
 ## Uso
 
 ### Compilar
-
+Execute o seguinte comando dentro do diretório "compiler"
 ```bash
-# Execute o seguinte comando dentro do diretório "compiler"
 g++ *.cpp -o xpp_compiler
 ```
 
