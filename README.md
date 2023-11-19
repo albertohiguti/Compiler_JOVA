@@ -4,7 +4,7 @@
 
 Caso você esteja usando o editor de código VSCode é possível visualizar esse arquivo README como se estivesse em um navegador, para isso basta clicar no botão "Open Preview" no canto superior direito da tela.
 
-Caso contrário, você pode visualizar esse arquivo README clicando [aqui](https://github.com/albertohiguti/Compiler_Xpp)
+Caso contrário, você pode visualizar esse arquivo README clicando [aqui](https://github.com/albertohiguti/Compiler_X_plus_plus)
 
 Este repositório contém um arquivo chamado teste.xpp que tenta abordar todos os aspectos da linguagem X++. Fique a vontade para utilizá-lo com outros trabalhos.
 
