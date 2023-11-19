@@ -1,15 +1,26 @@
 #include "parser.h"
 
-Parser::Parser(string input)
+Parser::Parser(string input, bool debugMode)
 {
-	scanner = new Scanner(input);
+	scanner = new Scanner(input, debugMode);
 	this->createEnumTranslator();
+	this->debugMode = debugMode;
 }
 
 void Parser::advance()
 {
 	lToken = scanner->nextToken();
-	std::cout << "Leu o token " << name_translator[lToken->name] << " " << attributes_translator[lToken->attribute] << " " << lToken->lexeme << "\n";
+	if (this->debugMode)
+	{
+		if (this->debugMode)
+		{
+			std::cout << "------------------------------------------------------" << std::endl;
+		}
+		if (this->debugMode)
+		{
+			std::cout << "Token: \n -Name: " << name_translator[lToken->name] << "\n -Attribute: " << attributes_translator[lToken->attribute] << "\n -Lexeme: " << lToken->lexeme << "\n";
+		}
+	}
 }
 
 void Parser::lookAhead(int pseudoPos)
@@ -24,7 +35,13 @@ void Parser::match(int t)
 	std::string tokenName = name_translator[lToken->name];
 	std::string tokenAttribute = attributes_translator[lToken->attribute];
 
-	std::cout << "Trying to match " << tokenName << " Or " << tokenAttribute << " With " << name << " Or " << attribute << "\n";
+	if (this->debugMode)
+	{
+
+		std::cout << "------------------------------------------------------" << std::endl;
+
+		std::cout << "Tentando casar o token: [Name: " << tokenName << " |Attribute: " << tokenAttribute << "] \n com o token [Name: " << name << " |Attribute: " << attribute << "]" << std::endl;
+	}
 	if (lToken->name == t || lToken->attribute == t)
 		advance();
 	else
@@ -53,7 +70,10 @@ void Parser::classList()
 
 void Parser::classDecl()
 {
-	std::cout << "classDecl" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: classDecl" << std::endl;
+	}
 	match(CLASS);
 	match(ID);
 
@@ -77,21 +97,30 @@ void Parser::classBody()
 
 void Parser::varDeclListOpt()
 {
-	std::cout << "varDeclListOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: varDeclListOpt" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 		varDeclList();
 }
 
 void Parser::varDeclList()
 {
-	std::cout << "varDeclList" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: varDeclList" << std::endl;
+	}
 	varDecl();
 	varDeclListLine();
 }
 
 void Parser::varDecl()
 {
-	std::cout << "varDecl" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: varDecl" << std::endl;
+	}
 	type();
 	if (lToken->attribute == LSQUARE)
 	{
@@ -101,13 +130,19 @@ void Parser::varDecl()
 
 	match(ID);
 	varDeclOpt();
-	std::cout << "leu o opcional e ta indo ler o ;" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: leu o opcional e ta indo ler o ;" << std::endl;
+	}
 	match(SEMICOLON);
 }
 
 void Parser::varDeclOpt()
 {
-	std::cout << "varDeclOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: varDeclOpt" << std::endl;
+	}
 	if (lToken->attribute == COMMA)
 	{
 		match(COMMA);
@@ -118,7 +153,10 @@ void Parser::varDeclOpt()
 
 void Parser::type()
 {
-	std::cout << "type" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: type" << std::endl;
+	}
 	if (lToken->name == INT)
 		match(INT);
 	else if (lToken->name == STRING_T)
@@ -129,7 +167,10 @@ void Parser::type()
 
 void Parser::constructDeclListOpt()
 {
-	std::cout << "constructDeclListOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: constructDeclListOpt" << std::endl;
+	}
 	if (lToken->name == CONSTRUCTOR)
 		constructDeclList();
 }
@@ -148,21 +189,30 @@ void Parser::constructDecl()
 
 void Parser::methodDeclListOpt()
 {
-	std::cout << "methodDeclListOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: methodDeclListOpt" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 		methodDeclList();
 }
 
 void Parser::methodDeclList()
 {
-	std::cout << "methodDeclList" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: methodDeclList" << std::endl;
+	}
 	methodDecl();
 	methodDeclListLine();
 }
 
 void Parser::methodDecl()
 {
-	std::cout << "methodDecl" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: methodDecl" << std::endl;
+	}
 	type();
 	if (lToken->attribute == LSQUARE)
 	{
@@ -176,7 +226,10 @@ void Parser::methodDecl()
 
 void Parser::methodBody()
 {
-	std::cout << "methodBody" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: methodBody" << std::endl;
+	}
 	match(LPARENTESES);
 	paramListOpt();
 	match(RPARENTESES);
@@ -187,21 +240,30 @@ void Parser::methodBody()
 
 void Parser::paramListOpt()
 {
-	std::cout << "paramListOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: paramListOpt" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 		paramList();
 }
 
 void Parser::paramList()
 {
-	std::cout << "paramList" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: paramList" << std::endl;
+	}
 	param();
 	paramListLine();
 }
 
 void Parser::param()
 {
-	cout << "param" << endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: param" << std::endl;
+	}
 	type();
 	if (lToken->attribute == LSQUARE)
 	{
@@ -214,31 +276,38 @@ void Parser::param()
 
 void Parser::statementsOpt()
 {
-	std::cout << "statementsOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: statementsOpt" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID || lToken->name == PRINT || lToken->name == READ || lToken->name == RETURN || lToken->name == SUPER || lToken->name == IF || lToken->name == FOR || lToken->name == BREAK || lToken->attribute == SEMICOLON)
 		statements();
 }
 
 void Parser::statements()
 {
-	std::cout << "statements" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: statements" << std::endl;
+	}
 	statement();
 	statementsLine();
 }
 
 void Parser::statement()
 {
-	std::cout << "statement" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: statement" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T)
 	{
-		std::cout << "entrou no int ou string" << std::endl;
 		varDeclList();
 	}
 	else if (lToken->name == ID)
 	{
 
 		lookAhead();
-		std::cout << "Look ahead result: " << name_translator[cToken->name] << " " << attributes_translator[cToken->attribute] << "\n";
 		if (cToken->attribute == ASSIGN)
 		{
 			atribStat();
@@ -254,7 +323,6 @@ void Parser::statement()
 		else if (cToken->attribute == LSQUARE)
 		{
 			lookAhead(scanner->getPos() + 1);
-			std::cout << "Look ahead result: " << name_translator[cToken->name] << " " << attributes_translator[cToken->attribute] << "\n";
 			if (cToken->attribute == RSQUARE)
 				varDeclList();
 			else
@@ -296,7 +364,10 @@ void Parser::statement()
 
 void Parser::atribStat()
 {
-	std::cout << "atribStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: atribStat" << std::endl;
+	}
 	lValue();
 	match(ASSIGN);
 	if (lToken->name == NEW)
@@ -307,29 +378,40 @@ void Parser::atribStat()
 
 void Parser::printStat()
 {
-	std::cout << "printStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: printStat" << std::endl;
+	}
 	match(PRINT);
 	expression();
 }
 
 void Parser::readStat()
 {
-	std::cout << "readStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: readStat" << std::endl;
+	}
 	match(READ);
-	cout << "readStat" << endl;
 	lValue();
 }
 
 void Parser::returnStat()
 {
-	std::cout << "returnStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: returnStat" << std::endl;
+	}
 	match(RETURN);
 	expression();
 }
 
 void Parser::superStat()
 {
-	std::cout << "superStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: superStat" << std::endl;
+	}
 	match(SUPER);
 	match(LPARENTESES);
 	argListOpt();
@@ -338,7 +420,10 @@ void Parser::superStat()
 
 void Parser::ifStat()
 {
-	std::cout << "ifStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: ifStat" << std::endl;
+	}
 	match(IF);
 	match(LPARENTESES);
 	expression();
@@ -358,7 +443,10 @@ void Parser::ifStat()
 
 void Parser::forStat()
 {
-	std::cout << "forStat" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: forStat" << std::endl;
+	}
 	match(FOR);
 	match(LPARENTESES);
 	atribStatOpt();
@@ -374,7 +462,10 @@ void Parser::forStat()
 
 void Parser::atribStatOpt()
 {
-	std::cout << "atribStatOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: atribStatOpt" << std::endl;
+	}
 	if (lToken->name == ID)
 	{
 		lValue();
@@ -388,24 +479,32 @@ void Parser::atribStatOpt()
 
 void Parser::expressionOpt()
 {
-	std::cout << "expressionOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: expressionOpt" << std::endl;
+	}
 	if (lToken->attribute == ADD || lToken->attribute == SUB)
 		expression();
 }
 
 void Parser::lValue()
 {
-	std::cout << "lvalue" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: lvalue" << std::endl;
+	}
 	match(ID);
 	lValueComp();
 }
 
 void Parser::lValueComp()
 {
-	std::cout << "lvaluecomp" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: lvaluecomp" << std::endl;
+	}
 	if (lToken->attribute == DOT)
 	{
-		std::cout << "entrou no lvaluecomp" << std::endl;
 		match(DOT);
 		match(ID);
 		if (lToken->attribute == LSQUARE)
@@ -433,7 +532,10 @@ void Parser::lValueComp()
 
 void Parser::expression()
 {
-	std::cout << "expression" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: expression" << std::endl;
+	}
 	numExpression();
 
 	if (lToken->name == OP)
@@ -445,7 +547,10 @@ void Parser::expression()
 
 void Parser::AllocExpression()
 {
-	std::cout << "AllocExpression" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: AllocExpression" << std::endl;
+	}
 	if (lToken->name == NEW)
 	{
 		match(NEW);
@@ -465,7 +570,10 @@ void Parser::AllocExpression()
 
 void Parser::numExpression()
 {
-	std::cout << "numExpression" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: numExpression" << std::endl;
+	}
 	term();
 
 	if (lToken->attribute == ADD || lToken->attribute == SUB)
@@ -477,7 +585,10 @@ void Parser::numExpression()
 
 void Parser::term()
 {
-	std::cout << "term" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: term" << std::endl;
+	}
 	unaryExpression();
 
 	if (lToken->attribute == MUL || lToken->attribute == DIV || lToken->attribute == MODULE)
@@ -490,7 +601,10 @@ void Parser::term()
 
 void Parser::unaryExpression()
 {
-	std::cout << "unaryExpression" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: unaryExpression" << std::endl;
+	}
 	if (lToken->attribute == ADD || lToken->attribute == SUB)
 	{
 		match(lToken->attribute);
@@ -500,7 +614,10 @@ void Parser::unaryExpression()
 
 void Parser::factor()
 {
-	std::cout << "factor" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: factor" << std::endl;
+	}
 	if (lToken->name == INTEGER_LITERAL)
 		match(INTEGER_LITERAL);
 	else if (lToken->name == STRING)
@@ -520,21 +637,30 @@ void Parser::factor()
 
 void Parser::argListOpt()
 {
-	std::cout << "argListOpt" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: argListOpt" << std::endl;
+	}
 	if (lToken->attribute == ADD || lToken->attribute == SUB)
 		argList();
 }
 
 void Parser::argList()
 {
-	std::cout << "argList" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: argList" << std::endl;
+	}
 	expression();
 	argListLine();
 }
 
 void Parser::varDeclListLine()
 {
-	std::cout << "varDeclListLine" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: varDeclListLine" << std::endl;
+	}
 	lookAhead(scanner->getPos() + 0);
 	if ((lToken->name == INT || lToken->name == STRING_T || lToken->name == ID) && (cToken->name == ID || cToken->attribute == LSQUARE))
 	{
@@ -545,6 +671,11 @@ void Parser::varDeclListLine()
 
 void Parser::constructDeclListLine()
 {
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: constructDeclListLine" << std::endl;
+	}
+
 	if (lToken->name == CONSTRUCTOR)
 	{
 		constructDecl();
@@ -554,6 +685,10 @@ void Parser::constructDeclListLine()
 
 void Parser::methodDeclListLine()
 {
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: methodDeclListLine" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID)
 	{
 		methodDecl();
@@ -563,7 +698,10 @@ void Parser::methodDeclListLine()
 
 void Parser::paramListLine()
 {
-	std::cout << "paramListLine" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: paramListLine" << std::endl;
+	}
 	if (lToken->attribute == COMMA)
 	{
 		match(COMMA);
@@ -574,7 +712,10 @@ void Parser::paramListLine()
 
 void Parser::statementsLine()
 {
-	std::cout << "statementsLine" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: statementsLine" << std::endl;
+	}
 	if (lToken->name == INT || lToken->name == STRING_T || lToken->name == ID || lToken->name == PRINT || lToken->name == READ || lToken->name == RETURN || lToken->name == SUPER || lToken->name == IF || lToken->name == FOR || lToken->name == BREAK || lToken->attribute == SEMICOLON)
 	{
 		statement();
@@ -584,7 +725,10 @@ void Parser::statementsLine()
 
 void Parser::argListLine()
 {
-	std::cout << "argListLine" << std::endl;
+	if (this->debugMode)
+	{
+		std::cout << "Não Terminal Atual: argListLine" << std::endl;
+	}
 	if (lToken->attribute == COMMA)
 	{
 		match(COMMA);

@@ -2,44 +2,20 @@
 
 string *attributes_translator, *name_translator;
 
-void print(Token *);
-void createEnumTranslator();
-void freeVetor();
-
 int main(int argc, char *argv[])
 {
-
-    if (argc != 2)
+    if (argc < 2)
     {
-        cout << "Error, try using: ./compiler inputFilePath.mj\n";
+        cout << "Erro, tente usar algo como: ./xpp_compiler inputFilePath.xpp\n";
         return 1;
     }
 
-    // createEnumTranslator();
+    bool debugMode = argv[2] != NULL && std::strcmp(argv[2], "-d") == 0;
 
     Token *token;
-
-    Parser *parser = new Parser(argv[1]);
+    Parser *parser = new Parser(argv[1], debugMode);
 
     parser->run();
 
-    // do
-    // {
-    //     token = scanner->nextToken();
-    //     // cout << t->name << " ";
-    //     std::cout << "Name " << name_translator[token->name] << " Attribute " << attributes_translator[token->attribute] << " Lexeme " << token->lexeme << "\n";
-
-    // } while (token->name != END_OF_FILE);
-
     return 0;
-}
-
-void print(Token *token)
-{
-    cout << attributes_translator[token->name];
-
-    if (token->attribute != UNDEF)
-        cout << "(" << attributes_translator[token->attribute] << ")";
-
-    cout << " ";
 }

@@ -7,6 +7,7 @@ private:
 	Token *lToken;
 	Token *cToken;
 	string *attributes_translator, *name_translator;
+	bool debugMode;
 
 	void advance();
 	void match(int);
@@ -14,7 +15,7 @@ private:
 	void createEnumTranslator();
 
 public:
-	Parser(string);
+	Parser(string, bool);
 	void run();
 	void program();
 	void classList();

@@ -1,11 +1,12 @@
 #include "scanner.h"
 
 // Construtor
-Scanner::Scanner(string Input)
+Scanner::Scanner(string Input, bool debugMode)
 {
     pos = 0;
     lineID = 1;
     st = new SymbolTable();
+    this->debugMode = debugMode;
     this->populateSymbolTable();
 
     ifstream inputFile(Input);
@@ -22,7 +23,7 @@ Scanner::Scanner(string Input)
         inputFile.close();
     }
     else
-        cout << "Unable to open file";
+        cout << "Unable to open file\n";
 }
 
 // Método que retorna o próximo token da entrada
@@ -34,7 +35,6 @@ Token *Scanner::nextToken()
 
     while (true)
     {
-        // std::cout << "Analyzing: " << input[pos] << " in position " << pos << " and in State " << state << "\n";
 
         switch (state)
         {
@@ -98,7 +98,7 @@ Token *Scanner::nextToken()
 
             else
                 lexicalError();
-            // cout << state << " ";
+
             lexeme += input[pos];
             pos++;
 
@@ -355,8 +355,10 @@ Token *Scanner::checkNextToken(int pseudoPos)
 
     while (true)
     {
-        std::cout << "Analyzing: " << input[pseudoPos] << " in position " << pseudoPos << " and in State " << state << "\n";
-
+        if (debugMode)
+        {
+            std::cout << "Analizando: " << input[pseudoPos] << " na posição " << pseudoPos << " e no estado " << state << "\n";
+        }
         switch (state)
         {
         case 0: // case 9: case12: case22:
@@ -418,7 +420,7 @@ Token *Scanner::checkNextToken(int pseudoPos)
                 state = 38;
             else
                 lexicalError();
-            // cout << state << " ";
+
             lexeme += input[pseudoPos];
             pseudoPos++;
 

@@ -1,21 +1,41 @@
 # Compiler_X++
 
-## Installation
+## Observações
 
-## Use
+Caso você esteja usando o editor de código VSCode é possível visualizar esse arquivo README como se estivesse em um navegador, para isso basta clicar no botão "Open Preview" no canto superior direito da tela.
 
-### Compile
+Caso contrário, você pode visualizar esse arquivo README clicando [aqui](https://github.com/albertohiguti/Compiler_Xpp)
+
+Este repositório contém um arquivo chamado teste.xpp que tenta abordar todos os aspectos da linguagem X++. Fique a vontade para utilizá-lo com outros trabalhos.
+
+## Uso
+
+### Compilar
 
 ```bash
-# inside the scanner folder
+# Execute o seguinte comando dentro do diretório "compiler"
 g++ *.cpp -o xpp_compiler
 ```
 
-### Run
+### Executar
 
 ```bash
 ./xpp_compiler teste.xpp
 ```
+
+### Executar com Debug Mode
+
+O Debug Mode é uma funcionalidade que imprime na tela o que está acontecendo durante a execução do programa. Para ativá-lo, basta adicionar a flag "-d" na hora de executar o programa.
+
+```bash
+./xpp_compiler teste.xpp -d
+```
+## Sobre
+
+### Tratamento de Ambiguidades
+
+Em alguns não terminais da linguagem apresentada, existem ambiguidades não solucionáveis através de um lookahead de um único token. Para resolver esse problema, foi criado um lookAhead de N tokens, que funciona juntamente com o lookahead padrão, onde ele é ativado apenas nos casos de possíveis ambiguidades.
+
 ## Gramática sem recursão a esquerda
 
              Program -> ClassList

@@ -1,5 +1,3 @@
-
-
 class main {
     int a, b;
     // comentario de teste
@@ -22,8 +20,7 @@ class main {
     
 }
 
-
-class main {
+class main34 {
 	int adulto, bolinha;
 	jucara [] jujuba;
 

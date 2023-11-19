@@ -7,10 +7,11 @@ private:
     int pos;      // Posição atual
     int lineID;   // Linha atual
     SymbolTable *st;
+    bool debugMode;
 
 public:
     // Construtor
-    Scanner(string);
+    Scanner(string, bool);
 
     // Método que retorna o próximo token da entrada
     Token *nextToken();

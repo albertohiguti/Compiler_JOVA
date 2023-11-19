@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
-
+#include <cstring>
 using namespace std;
 
 enum Names
