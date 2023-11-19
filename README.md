@@ -36,7 +36,7 @@ O Debug Mode é uma funcionalidade que imprime na tela o que está acontecendo d
 
 Em alguns não terminais da linguagem apresentada, existem ambiguidades não solucionáveis através de um lookahead de um único token. Para resolver esse problema, foi criado um lookAhead de N tokens, que funciona juntamente com o lookahead padrão, onde ele é ativado apenas nos casos de possíveis ambiguidades.
 
-## Gramática sem recursão a esquerda
+### Gramática sem recursão a esquerda
 
              Program -> ClassList
                       | ϵ
