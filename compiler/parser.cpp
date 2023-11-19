@@ -24,7 +24,7 @@ void Parser::match(int t)
 	std::string tokenName = name_translator[lToken->name];
 	std::string tokenAttribute = attributes_translator[lToken->attribute];
 
-	std::cout << "Tring to match " << tokenName << " Or " << tokenAttribute << " With " << name << " Or " << attribute << "\n";
+	std::cout << "Trying to match " << tokenName << " Or " << tokenAttribute << " With " << name << " Or " << attribute << "\n";
 	if (lToken->name == t || lToken->attribute == t)
 		advance();
 	else
