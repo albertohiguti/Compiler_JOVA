@@ -8,13 +8,13 @@
 
 ```bash
 # inside the scanner folder
-g++ principal.cpp scanner.cpp -o compiler
+g++ *.cpp -o xpp_compiler
 ```
 
 ### Run
 
 ```bash
-./compiler teste.mj
+./xpp_compiler teste.xpp
 ```
 ## Gramática sem recursão a esquerda
 
