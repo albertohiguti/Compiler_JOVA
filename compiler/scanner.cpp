@@ -78,6 +78,10 @@ Token *Scanner::nextToken()
                 state = 28;
             else if (input[pos] == '"')
                 state = 29;
+            else if (input[pos] == ',')
+                state = 37;
+            else if (input[pos] == '.')
+                state = 38;
             else if (isalpha(input[pos]))
                 state = 30;
             else if (input[pos] == '_')
@@ -91,8 +95,7 @@ Token *Scanner::nextToken()
                 lineID++;
                 state = 34;
             }
-            else if (input[pos] == ',')
-                state = 37;
+
             else
                 lexicalError();
             // cout << state << " ";
@@ -259,6 +262,14 @@ Token *Scanner::nextToken()
             pos++;
             break;
 
+        case 37:
+            tok = new Token(SEP, COMMA);
+            return tok;
+
+        case 38:
+            tok = new Token(SEP, DOT);
+            return tok;
+
         case 30:
             if (isalnum(input[pos]))
                 state = 30;
@@ -287,10 +298,13 @@ Token *Scanner::nextToken()
 
         case 32:
             if (isdigit(input[pos]))
+            {
                 state = 32;
+            }
             else
                 state = 33;
 
+            lexeme += input[pos];
             pos++;
             break;
 
@@ -315,10 +329,6 @@ Token *Scanner::nextToken()
                 state = 17;
             pos++;
             break;
-
-        case 37:
-            tok = new Token(SEP, COMMA);
-            return tok;
 
         default:
             lexicalError();
@@ -345,7 +355,7 @@ Token *Scanner::checkNextToken(int pseudoPos)
 
     while (true)
     {
-        // std::cout << "Analyzing: " << input[pseudoPos] << " in position " << pseudoPos << " and in State " << state << "\n";
+        std::cout << "Analyzing: " << input[pseudoPos] << " in position " << pseudoPos << " and in State " << state << "\n";
 
         switch (state)
         {
@@ -404,6 +414,8 @@ Token *Scanner::checkNextToken(int pseudoPos)
             }
             else if (input[pseudoPos] == ',')
                 state = 37;
+            else if (input[pseudoPos] == '.')
+                state = 38;
             else
                 lexicalError();
             // cout << state << " ";
@@ -629,6 +641,10 @@ Token *Scanner::checkNextToken(int pseudoPos)
 
         case 37:
             tok = new Token(SEP, COMMA);
+            return tok;
+
+        case 38:
+            tok = new Token(SEP, DOT);
             return tok;
 
         default:

@@ -16,11 +16,39 @@ class main {
 
     int soma (int a, int b) {
         // int c;
-        c = 3 + 4;
-        return c;
+        c = -3 + -4;
+        return +dedau;
     }
-
-    /*outro 
-    comentario de teste*/
     
+}
+
+
+class main {
+	int adulto, bolinha;
+	jucara [] jujuba;
+
+	constructor (int olerite, string [] nomedo){
+	      int adulto, bolinha;
+		  adulto.erui = + 456 - + controle % - 98;
+		  adulto[+ 34] = new OUTY();		 
+		  print + 34;
+		  read teste ;
+		  return + 34 ;
+		  super () ;
+		  if ( + 34 ){
+		   break ;
+		  }
+		  for (xuxu = -90; +euio * -jotinha; xexe = +55) {
+		   break ;
+		  }
+		  
+		  ;
+	}
+	
+	string metodou (){
+	}
+}
+
+class euclidean extends main {
+	
 }
